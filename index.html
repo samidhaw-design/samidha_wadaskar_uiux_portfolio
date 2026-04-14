@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samidha Mestry Wadaskar | Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #EBEAE3;
+            --text-primary: #1C1C1A;
+            --text-secondary: #5A5749;
+            --text-muted: #8A8478;
+            --accent: #D4603A;
+            --card-surface: #F8F5EF;
+            --border: #D0CCC4;
+            
+            /* Palette Colors */
+            --orange: #F4522C;
+            --indigo: #2D2FD9;
+            --pink: #FFB3C1;
+            --lavender: #BFAEF5;
+            --forest: #1D3D2A;
+            --sky-blue: #AECDF5;
+            --lime: #DCF06A;
+            --amber: #F5C200;
+
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            background-image: 
+                linear-gradient(rgba(155,150,138,0.18) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(155,150,138,0.18) 1px, transparent 1px);
+            background-size: 40px 40px;
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, .title {
+            font-family: var(--font-display);
+        }
+
+        /* Page Management */
+        .page {
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Homepage Canvas */
+        #home-canvas {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            cursor: default;
+        }
+
+        .hero-block {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .flower-bouquet {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .hero-block * {
+            pointer-events: auto;
+        }
+
+        .eyebrow {
+            font-weight: 300;
+            font-size: 14px;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(24px, 4vw, 42px);
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .descriptor {
+            font-weight: 400;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .descriptor span.highlight {
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+            text-underline-offset: 4px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .social-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: var(--card-surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Draggable Items */
+        .canvas-item {
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        .canvas-item:active {
+            cursor: grabbing;
+        }
+
+        .canvas-item img {
+            display: block;
+            pointer-events: none;
+            transition: transform 0.2s ease;
+        }
+
+        .canvas-item:hover img {
+            transform: scale(1.04);
+        }
+
+        .canvas-item .label {
+            margin-top: 12px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-primary);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .canvas-item:hover .label {
+            opacity: 1;
+        }
+
+        .canvas-item.text-only .label {
+            opacity: 1;
+            font-size: 18px;
+        }
+
+        /* Footer Bar */
+        .footer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 44px;
+            background: rgba(235, 234, 227, 0.9);
+            backdrop-filter: blur(6px);
+            border-top: 1px solid rgba(155, 150, 138, 0.18);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 100;
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Inner Pages Common */
+        .inner-page-container {
+            padding-bottom: 80px;
+        }
+
+        .top-bar {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            background: var(--bg-canvas);
+            z-index: 50;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            border: none;
+            background: none;
+        }
+
+        .back-btn:hover {
+            color: var(--accent);
+        }
+
+        .page-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+        }
+
+        /* Meals Page */
+        .intro-block {
+            max-width: 700px;
+            margin: 48px auto;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .intro-text {
+            font-family: var(--font-display);
+            font-weight: 400;
+            font-size: clamp(18px, 2.2vw, 26px);
+            color: var(--text-primary);
+            line-height: 1.55;
+        }
+
+        .meals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .meal-circle {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: var(--border);
+            transition: all 0.22s ease;
+            cursor: pointer;
+        }
+
+        .meal-circle:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Photos Page */
+        .photos-grid {
+            column-count: 3;
+            column-gap: 14px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .photo-item {
+            break-inside: avoid;
+            margin-bottom: 14px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            background-color: var(--border);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(28, 28, 26, 0.5);
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 14px;
+            color: #FAF7F2;
+        }
+
+        .photo-item:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        .photo-caption {
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .photo-location {
+            font-weight: 300;
+            font-size: 11px;
+            opacity: 0.65;
+        }
+
+        /* Books Page */
+        .bookshelf-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 24px;
+            position: relative;
+        }
+
+        .books-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 0;
+        }
+
+        .shelf-line {
+            height: 6px;
+            background: #B8AD9E;
+            border-radius: 2px;
+            width: 100%;
+            margin-top: -2px;
+        }
+
+        .book-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .book-card {
+            width: 52px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease, width 0.5s ease;
+            cursor: pointer;
+        }
+
+        .book-wrapper:hover .book-card {
+            transform: rotateY(-180deg);
+            width: 140px;
+        }
+
+        .book-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .book-spine {
+            background: var(--book-color);
+            border-left: 4px solid rgba(0,0,0,0.12);
+            padding: 12px 4px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .spine-title {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 12px;
+            color: rgba(255,255,255,0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .book-cover {
+            background: var(--book-color);
+            transform: rotateY(180deg);
+            padding: 20px;
+            justify-content: space-between;
+        }
+
+        .cover-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .cover-author {
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 8px;
+        }
+
+        .status-tag {
+            margin-top: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* UIUX Projects Page */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .project-card {
+            background: var(--card-surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.07);
+        }
+
+        .project-image {
+            height: 200px;
+            background-color: var(--border);
+        }
+
+        .project-body {
+            padding: 20px;
+            position: relative;
+        }
+
+        .tags-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tag-pill {
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .project-name {
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            padding-right: 50px;
+        }
+
+        .project-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .cta-icon-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .project-card:hover .cta-icon-btn {
+            background: var(--accent);
+        }
+
+        .archive-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 24px;
+        }
+
+        .archive-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .archive-card {
+            background: var(--card-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .archive-card:hover {
+            border-color: var(--accent);
+        }
+
+        .archive-card .emoji { font-size: 22px; margin-bottom: 8px; display: block; }
+        .archive-card .name { font-family: var(--font-display); font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
+        .archive-card .type { font-size: 11px; font-weight: 300; color: var(--text-muted); margin-bottom: 8px; }
+        .archive-card .link { font-size: 11px; color: var(--accent); font-weight: 500; }
+
+        /* About Page */
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .photo-block {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .photo-block img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .about-text {
+            width: 100%;
+        }
+
+        .about-text h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .about-text p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            margin-bottom: 20px;
+        }
+
+        .about-text p b {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .about-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 28px;
+            border-radius: 40px;
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: #FAF7F2;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1.5px solid var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-primary);
+            color: #FAF7F2;
+        }
+
+        /* Resume Page */
+        .resume-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: calc(100vh - 150px);
+            padding: 0 24px;
+        }
+
+        .resume-emoji { font-size: 54px; margin-bottom: 16px; }
+        .resume-name { font-size: clamp(28px, 3.5vw, 48px); font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+        .resume-subhead { font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--accent); margin-bottom: 12px; }
+        .resume-body { font-size: 15px; color: var(--text-secondary); max-width: 380px; line-height: 1.65; margin-bottom: 32px; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .meals-grid { grid-template-columns: repeat(2, 1fr); }
+            .photos-grid { column-count: 2; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .archive-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            body { background-size: 30px 30px; }
+            #home-canvas { height: auto; min-height: 100vh; overflow-y: auto; padding-top: 60px; padding-bottom: 100px; }
+            .hero-block { position: relative; top: 0; left: 0; transform: none; margin: 0 auto 40px; padding: 0 20px; }
+            .flower-bouquet { display: none; }
+            .canvas-item { position: relative !important; top: 0 !important; left: 0 !important; transform: none !important; margin: 30px auto !important; width: fit-content; }
+            .canvas-item .label { opacity: 1; font-size: 16px; }
+            .meals-grid { grid-template-columns: 1fr; }
+            .photos-grid { column-count: 1; }
+            .about-content { grid-template-columns: 1fr; gap: 40px; }
+            .archive-grid { grid-template-columns: 1fr; }
+            .social-links { flex-wrap: wrap; }
+            .social-btn { width: 44px; height: 44px; }
+            .footer-bar { padding: 0 12px; height: auto; padding: 10px; flex-direction: column; gap: 8px; text-align: center; }
+            .footer-item span { display: inline; }
+            
+            /* Back button fix for mobile */
+            .back-extra { display: none; }
+            .page-title { font-size: 16px; max-width: 160px; text-align: center; }
+            .back-btn { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HOME CANVAS -->
+    <div id="home-page" class="page active">
+        <div id="home-canvas">
+            <div class="hero-block">
+                <span class="eyebrow">Hi, I'm</span>
+                <h1 class="name">Samidha Mestry Wadaskar</h1>
+                <p class="descriptor">
+                    I am a Certified Usability Analyst (CUA®) by Human Factors International (HFI), with 7+ years of multidisciplinary design experience, crafting user-centered solutions that align business goals with real user needs.
+                </p>
+                <div class="social-links">
+                    <a href="mailto:Samidha971@gmail.com" class="social-btn" title="Email">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/samidha-mestry-wadaskar-hfi-cua%E2%84%A2-556300148/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BDj1mr%2BnyQwGJes9JOrFMvA%3D%3D" target="_blank" class="social-btn" title="LinkedIn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                    </a>
+                </div>
+                <div style="margin-top: 24px;">
+                    <a href="Samidha_Mestry_Wadaskar_UIUX Designer_Resume.pdf" target="_blank" class="btn btn-primary" style="padding: 10px 24px; font-size: 13px;">
+                        <span style="margin-right: 8px;">🌸</span>
+                        View Resume
+                    </a>
+                </div>
+            </div>
+
+            <!-- Draggable Items -->
+            <!-- Item 1: Meals -->
+            <div class="canvas-item" data-page="meals-page" style="left: 15%; top: 10%; transform: rotate(-3deg);">
+                <img src="./tomatoes.png" alt="Meals" width="120" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">Meals I Cook</div>
+            </div>
+
+            <!-- Item 2: Photos -->
+            <div class="canvas-item" data-page="photos-page" style="left: 10%; top: 45%; transform: rotate(4deg);">
+                <img src="./photos-i-take.png" alt="Photos" width="110" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">Photos I Take</div>
+            </div>
+
+            <!-- Item 3: Other Projects -->
+            <div class="canvas-item" data-url="https://drive.google.com/drive/folders/1zzUOCmEngmSzrEuS2YJAaHQF0su8tiyp?usp=sharing" style="left: 20%; top: 75%;">
+                <img src="./archive-design.png" alt="Other Projects" width="100" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">Other Projects</div>
+            </div>
+
+            <!-- Item 4: UIUX Projects -->
+            <div class="canvas-item" data-page="projects-page" style="left: 75%; top: 10%; transform: rotate(5deg);">
+                <img src="./uiux-project.png" alt="UIUX Projects" width="110" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">UIUX Projects</div>
+            </div>
+
+            <!-- Item 6: Books -->
+            <div class="canvas-item" data-page="books-page" style="left: 80%; top: 75%; transform: rotate(-4deg);">
+                <img src="./booking-i-am-reading.png" alt="Books" width="100" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">Books I'm Reading</div>
+            </div>
+
+            <!-- Item 7: About Me -->
+            <div class="canvas-item" data-page="about-page" style="left: 50%; top: 72%; transform: translateX(-50%);">
+                <img src="./about-me.png" alt="About" width="110" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">About Me</div>
+            </div>
+
+            <!-- Item 8: Illustrations -->
+            <div class="canvas-item" data-page="illustrations-page" style="left: 80%; top: 45%; transform: rotate(-10deg);">
+                <img src="./pencil.png" alt="Illustrations" width="90" referrerPolicy="no-referrer" draggable="false">
+                <div class="label">Illustrations I draw</div>
+            </div>
+        </div>
+
+        <div class="footer-bar">
+            <div class="footer-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.82-2.82L7 15"/></svg>
+                <span>Drag the items around</span>
+            </div>
+            <div class="footer-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                <span>Click on the items to navigate to other pages</span>
+            </div>
+            <div class="footer-item">
+                @samidha_mestry_wadaskar · 2026
+            </div>
+        </div>
+    </div>
+
+    <!-- MEALS I COOK PAGE -->
+    <div id="meals-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">Meals I Cook</div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="intro-block">
+                <p class="intro-text">
+                    I love exploring new cuisines and flavors — it keeps life exciting and inspiring. Cooking those meals makes the experience even more joyful and personal. It's all about precision, texture, and colors.
+                </p>
+            </div>
+
+            <div class="meals-grid">
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/1.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/2.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/3.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/4.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/5.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/6.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/7.png'); background-size: cover; background-position: center;"></div>
+                <div class="meal-circle" style="background-image: url('./meals-i-cook/8.png'); background-size: cover; background-position: center;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHOTOS I TAKE PAGE -->
+    <div id="photos-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">Photos I Take</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="photos-grid">
+                <div class="photo-item"><img src="./photos-i-click/1.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/2.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/3.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/4.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/5.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/6.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/7.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/8.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/9.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/10.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/11.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/12.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./photos-i-click/13.jfif" alt="Photo" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ILLUSTRATIONS I DRAW PAGE -->
+    <div id="illustrations-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">Illustrations I draw</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="photos-grid">
+                <div class="photo-item"><img src="./illustrations-i-draw/1.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/2.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/3.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/4.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/5.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/6.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/7.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/8.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/9.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/10.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/11.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/12.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/13.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/14.jfif" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+                <div class="photo-item"><img src="./illustrations-i-draw/15.png" alt="Illustration" style="width:100%;display:block;" referrerPolicy="no-referrer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKS I'M READING PAGE -->
+    <div id="books-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">Books I'm Reading</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="bookshelf-container">
+                <div class="books-row" id="books-list">
+                    <!-- Books will be injected here -->
+                </div>
+                <div class="shelf-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UIUX PROJECTS PAGE -->
+    <div id="projects-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">UIUX Projects</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <a href="https://pmc.gov.in/" target="_blank" class="project-card">
+                    <div class="project-image" style="background-image: url('./pmc-project.png'); background-size: cover; background-position: center;"></div>
+                    <div class="project-body">
+                        <div class="tags-row">
+                            <span class="tag-pill">Civic</span>
+                            <span class="tag-pill">Web</span>
+                            <span class="tag-pill">7M+ users</span>
+                        </div>
+                        <h3 class="project-name">PMC Website Redesign</h3>
+                        <p class="project-desc">Redesigning the Pune Municipal Corporation's digital presence for 7 million citizens. Task-centric IA, Marathi-first language strategy, and culturally rooted visual design.</p>
+                        <div class="cta-icon-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 2 -->
+                <a href="https://mahadma.maharashtra.gov.in/" target="_blank" class="project-card">
+                    <div class="project-image" style="background-image: url('./dma-project.png'); background-size: cover; background-position: center;"></div>
+                    <div class="project-body">
+                        <div class="tags-row">
+                            <span class="tag-pill">Government</span>
+                            <span class="tag-pill">Award-winning</span>
+                            <span class="tag-pill">338 bodies</span>
+                        </div>
+                        <h3 class="project-name">DMA Maharashtra Website</h3>
+                        <p class="project-desc">Portal covering 338 municipal bodies across Maharashtra. Ranked 6th in the 150-Day e-Governance Reform Program. Government Website Design Excellence Award 2024–25.</p>
+                        <div class="cta-icon-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Project 3 -->
+                <div class="project-card" style="cursor: default;">
+                    <div class="project-image" style="background-image: url('./hercare-materna.png'); background-size: cover; background-position: center;"></div>
+                    <div class="project-body">
+                        <div class="tags-row">
+                            <span class="tag-pill">MedTech</span>
+                            <span class="tag-pill">Mobile App</span>
+                            <span class="tag-pill">Women's Health</span>
+                        </div>
+                        <h3 class="project-name">HerCare (Materna)</h3>
+                        <p class="project-desc">A maternal healthcare app simplifying prenatal care tracking, appointment management, and health education for expecting mothers in India.</p>
+                        <div style="margin-top: 12px; font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em;">Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="archive-section">
+                <h4 class="archive-title">Other Projects</h4>
+                <div class="archive-grid" id="archive-list">
+                    <!-- Archive items will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT ME PAGE -->
+    <div id="about-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">About Me</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="about-content">
+                <div class="photo-block">
+                    <img src="./about-me.png" referrerPolicy="no-referrer">
+                </div>
+                <div class="about-text">
+                    <h2>I’m a Certified Usability Analyst (CUA®) by Human Factors International (HFI), with 7+ years of experience across UI/UX, Graphic Design, and Interior Design - a journey that has shaped how I understand people, spaces, and digital experiences.</h2>
+                    <p>Based in Pune, I design intuitive, accessible, and scalable solutions, focusing on simplifying complex systems through user research, structured thinking, and usability-driven decisions.</p>
+                    <p>Over the years, I’ve led UX initiatives for large-scale platforms, collaborating with cross-functional teams to turn real-world problems into meaningful digital experiences. From improving information architecture to ensuring accessibility compliance, I approach design with both empathy and clarity.</p>
+                    <p><u>I actively use AI to work more efficiently and enjoy vibe coding to build and experiment with ideas - just like this website.</u></p>
+                    <p>What drives me most is understanding how users think, behave, and interact and transforming those insights into experiences that feel effortless.</p>
+                    <p>Beyond design, I enjoy exploring creativity in different forms whether it’s experimenting in the kitchen, illustrating ideas, or getting lost in a good horror movie. (The Blair Witch Project and The Exorcism of Emily Rose are my favorites).</p>
+                    
+                    <div class="about-actions">
+                        <a href="mailto:Samidha971@gmail.com" class="btn btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            Say Hello
+                        </a>
+                        <a href="https://www.linkedin.com/in/samidha-mestry-wadaskar-hfi-cua%E2%84%A2-556300148/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BDj1mr%2BnyQwGJes9JOrFMvA%3D%3D" target="_blank" class="btn btn-secondary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESUME PAGE -->
+    <div id="resume-page" class="page">
+        <div class="inner-page-container">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showPage('home-page')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Back<span class="back-extra"> to Canvas</span>
+                </button>
+                <div class="page-title">Resume</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="resume-content">
+                <div class="resume-emoji">🌸</div>
+                <h2 class="resume-name">Samidha Mestry Wadaskar</h2>
+                <div class="resume-subhead">UX/UI Designer · HFI-CUA™</div>
+                <p class="resume-body">7+ years of civic, healthcare, and enterprise UX design. Based in Pune. Open to conversations about meaningful design challenges.</p>
+                
+                <div class="about-actions" style="justify-content: center;">
+                    <a href="Samidha_Mestry_Wadaskar_UIUX Designer_Resume.pdf" target="_blank" class="btn btn-primary" style="border-radius: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Download Resume PDF
+                    </a>
+                    <a href="https://linkedin.com" target="_blank" class="btn btn-secondary" style="border-radius: 8px; border-width: 1px; border-color: var(--border);">
+                        View LinkedIn ↗
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation Logic
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Drag and Click Logic
+        const canvasItems = document.querySelectorAll('.canvas-item');
+        let isDragging = false;
+        let startX, startY;
+        let currentItem = null;
+        let initialLeft, initialTop;
+
+        canvasItems.forEach(item => {
+            item.addEventListener('mousedown', startDrag);
+            item.addEventListener('touchstart', startDrag, { passive: false });
+        });
+
+        function startDrag(e) {
+            if (e.type === 'touchstart') {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+            }
+
+            currentItem = e.currentTarget;
+            initialLeft = currentItem.offsetLeft;
+            initialTop = currentItem.offsetTop;
+            isDragging = false;
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag, { passive: false });
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function onDrag(e) {
+            let clientX, clientY;
+            if (e.type === 'touchmove') {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                e.preventDefault(); // Prevent scrolling while dragging
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+                isDragging = true;
+                currentItem.style.left = (initialLeft + dx) + 'px';
+                currentItem.style.top = (initialTop + dy) + 'px';
+                currentItem.style.cursor = 'grabbing';
+            }
+        }
+
+        function endDrag(e) {
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+
+            if (!isDragging && currentItem) {
+                const pageId = currentItem.getAttribute('data-page');
+                const url = currentItem.getAttribute('data-url');
+                if (pageId) showPage(pageId);
+                if (url) window.open(url, '_blank');
+            }
+
+            if (currentItem) {
+                currentItem.style.cursor = 'grab';
+            }
+            currentItem = null;
+        }
+
+        // Inject Books
+        const books = [
+            { title: "Articulating Design Decisions", author: "Tom Greever", color: "#D4603A", status: "CURRENTLY READING", statusClass: "reading" },
+            { title: "Don't Make Me Think", author: "Steve Krug", color: "#AECDF5", status: "READ", statusClass: "read" },
+            { title: "The Pocket Universal Principles of UX", author: "Irene Pereyra", color: "#1D3D2A", status: "READ", statusClass: "read" },
+            { title: "Design of Everyday Things", author: "Don Norman", color: "#F4522C", status: "ON SHELF", statusClass: "shelf" },
+            { title: "Atomic Habits", author: "James Clear", color: "#1FB355", status: "ON SHELF", statusClass: "shelf" },
+            { title: "Show Your Work", author: "Austin Kleon", color: "#F5C200", status: "ON SHELF", statusClass: "shelf" },
+            { title: "Steal Like an Artist", author: "Austin Kleon", color: "#E83535", status: "ON SHELF", statusClass: "shelf" },
+            { title: "Sprint", author: "Jake Knapp", color: "#1D3D2A", status: "ON SHELF", statusClass: "shelf" },
+            { title: "Hooked", author: "Nir Eyal", color: "#FFB3C1", status: "ON SHELF", statusClass: "shelf" }
+        ];
+
+        const booksList = document.getElementById('books-list');
+        books.forEach(book => {
+            const statusStyles = {
+                reading: 'background: #FFF3EC; color: #D4603A; border: 1px solid #E8C4A8;',
+                read: 'background: #E8F5EE; color: #2D7A50; border: 1px solid #A8D4B8;',
+                shelf: 'background: #F0EDE6; color: #8A8478; border: 1px solid #D0CCC4;'
+            };
+
+            const bookHtml = `
+                <div class="book-wrapper">
+                    <div class="book-card" style="--book-color: ${book.color}">
+                        <div class="book-face book-spine">
+                            <div class="spine-title">${book.title}</div>
+                        </div>
+                        <div class="book-face book-cover">
+                            <div class="cover-title">${book.title}</div>
+                            <div class="cover-author">${book.author}</div>
+                        </div>
+                    </div>
+                    <div class="status-tag" style="${statusStyles[book.statusClass]}">${book.status}</div>
+                </div>
+            `;
+            booksList.insertAdjacentHTML('beforeend', bookHtml);
+        });
+
+        // Inject Archive
+        const archiveItems = [
+            { emoji: "🏛️", name: "PMRDA Website", type: "Civic Portal" },
+            { emoji: "📊", name: "RTS Dashboard", type: "Internal Tool" },
+            { emoji: "🌳", name: "PMC Garden Booking", type: "Public Service" },
+            { emoji: "🏗️", name: "PCMC Encroachment App", type: "Field App" },
+            { emoji: "💰", name: "PMC Property Tax", type: "Payment Portal" },
+            { emoji: "🏞️", name: "Mulshi Website", type: "Tourism Portal" },
+            { emoji: "🤖", name: "Stark AI Studio", type: "Design Tool" },
+            { emoji: "🏎️", name: "American Wheels", type: "E-commerce" },
+            { emoji: "📄", name: "CA Account Landing Page", type: "Marketing" }
+        ];
+
+        const archiveList = document.getElementById('archive-list');
+        archiveItems.forEach(item => {
+            const archiveHtml = `
+                <div class="archive-card">
+                    <span class="emoji">${item.emoji}</span>
+                    <div class="name">${item.name}</div>
+                    <div class="type">${item.type}</div>
+                </div>
+            `;
+            archiveList.insertAdjacentHTML('beforeend', archiveHtml);
+        });
+    </script>
+</body>
+</html>
