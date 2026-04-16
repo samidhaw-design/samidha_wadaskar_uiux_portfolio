@@ -580,12 +580,13 @@
         }
 
         .archive-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        .archive-card {
+    display: grid;
+    /* This will automatically wrap the cards when they get too narrow */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    width: 100%;
+}
+       .archive-card {
             background: var(--card-surface);
             border: 1px solid var(--border);
             border-radius: 12px;
